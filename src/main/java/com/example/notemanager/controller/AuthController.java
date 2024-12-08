@@ -2,9 +2,14 @@ package com.example.notemanager.controller;
 
 import com.example.notemanager.model.User;
 import com.example.notemanager.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
         try {
             log.info("Attempting to authenticate user {}", username);
 
@@ -39,6 +44,22 @@ public class AuthController {
                 log.warn("Invalid credentials for user {}", username);
                 return "redirect:/login?error=InvalidCredentials";
             }
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    username,
+                    null,
+                    org.springframework.security.core.userdetails.User
+                            .withUsername(user.getUserName())
+                            .password(user.getPassword())
+                            .authorities(user.getRole())
+                            .build()
+                            .getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             log.info("User {} authenticated successfully", username);
 
