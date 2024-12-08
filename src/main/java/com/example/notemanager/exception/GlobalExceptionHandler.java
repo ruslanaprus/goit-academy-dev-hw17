@@ -20,6 +20,14 @@ public class GlobalExceptionHandler {
         return "note/error";
     }
 
+    @ExceptionHandler(value = EntityException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleEntityException(EntityException exception, Model model) {
+        log.error("A domain-specific issue was detected: {}", exception.getMessage(), exception);
+        model.addAttribute("message", exception.getMessage());
+        return "note/error";
+    }
+
     @ExceptionHandler(value = Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleException(Throwable exception, Model model) {
