@@ -1,6 +1,5 @@
 package com.example.notemanager.config;
 
-import com.example.notemanager.controller.AuthController;
 import com.example.notemanager.exception.EntityException;
 import com.example.notemanager.exception.ExceptionMessages;
 import com.example.notemanager.model.User;
@@ -30,14 +29,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/signup", "/signin").permitAll()
+                                .requestMatchers("/signup", "/login").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/signin")
-                        .permitAll()
-                )
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

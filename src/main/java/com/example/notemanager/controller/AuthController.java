@@ -1,9 +1,11 @@
 package com.example.notemanager.controller;
 
+import com.example.notemanager.model.User;
 import com.example.notemanager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,16 +17,36 @@ public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("/signin")
-    public String signinPage() {
-        return "signin";
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
     }
 
-    @PostMapping("/signin")
-    public String signin(@RequestParam("username") String username, @RequestParam("password") String password) {
-        // TODO add logic to authenticate the user
-        return "redirect:/note/list";
+    @PostMapping("/login")
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
+        try {
+            log.info("Attempting to authenticate user {}", username);
+
+            User user = userService.findByUserName(username);
+            if (user == null) {
+                log.warn("User {} not found", username);
+                return "redirect:/login?error=UserNotFound";
+            }
+
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                log.warn("Invalid credentials for user {}", username);
+                return "redirect:/login?error=InvalidCredentials";
+            }
+
+            log.info("User {} authenticated successfully", username);
+
+            return "redirect:/note/list";
+        } catch (Exception e) {
+            log.error("Error during login: {}", e.getMessage(), e);
+            return "redirect:/login?error=UnexpectedError";
+        }
     }
 
     @GetMapping("/signup")
@@ -40,6 +62,6 @@ public class AuthController {
             log.error("Error creating the user {}", e.getMessage());
         }
         log.info("User {} created", username);
-        return "redirect:/signin";
+        return "redirect:/login";
     }
 }

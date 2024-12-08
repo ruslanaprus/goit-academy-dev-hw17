@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     public String handleAuthenticationException(AuthenticationException exception, Model model) {
         log.error("Authentication failed: {}", exception.getMessage());
         model.addAttribute("message", "Invalid username or password");
-        return "signin";
+        return "login";
     }
 
 }
