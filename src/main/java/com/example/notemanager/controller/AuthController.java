@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
+
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -40,10 +42,23 @@ public class AuthController {
                 return "redirect:/login?error=UserNotFound";
             }
 
+            if (user.getAccountLockedUntil() != null && user.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
+                log.warn("User {} is locked out until {}", username, user.getAccountLockedUntil());
+                return "redirect:/login?error=LockedOut";
+            }
+
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 log.warn("Invalid credentials for user {}", username);
+                userService.incrementFailedAttempts(username);
+                if (user.getFailedAttempts() >= 2) {
+                    userService.lockAccount(username, LocalDateTime.now().plusMinutes(15));
+                    log.warn("User {} account locked due to too many failed attempts", username);
+                    return "redirect:/login?error=LockedOut";
+                }
                 return "redirect:/login?error=InvalidCredentials";
             }
+
+            userService.resetFailedAttempts(username);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     username,

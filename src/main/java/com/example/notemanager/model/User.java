@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -27,4 +29,8 @@ public class User {
     private String userName;
     private String password;
     private String role;
+    @Column(name = "failed_attempts", nullable = false, columnDefinition = "int default 0")
+    private int failedAttempts;
+    @Column(name = "account_locked_until")
+    private LocalDateTime accountLockedUntil;
 }

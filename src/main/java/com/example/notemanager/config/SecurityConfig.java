@@ -38,6 +38,8 @@ public class SecurityConfig {
                                 .maximumSessions(1)
                                 .expiredUrl("/login?error=SessionExpired")
                 )
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .logout(logout ->
                         logout
                                 .logoutUrl("/logout")

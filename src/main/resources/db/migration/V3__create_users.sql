@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL,
+    failed_attempts INT DEFAULT 0,
+    account_locked_until TIMESTAMP NULL,
     CONSTRAINT pk_users_id PRIMARY KEY (id)
     );
