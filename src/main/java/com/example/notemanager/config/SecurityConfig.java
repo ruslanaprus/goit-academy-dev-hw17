@@ -25,10 +25,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                                    UserDetailsService userDetailsService) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/signup", "/login").permitAll()
+                                .requestMatchers("/signup", "/login", "/login.html").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)

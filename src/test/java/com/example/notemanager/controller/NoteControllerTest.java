@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,7 +53,8 @@ class NoteControllerTest {
 
         mockMvc.perform(get("/note/list")
                         .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size)))
+                        .param("size", String.valueOf(size))
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("note/list"))
                 .andExpect(model().attributeExists("notes", "currentPage", "totalPages", "totalItems", "size"))
@@ -68,7 +71,8 @@ class NoteControllerTest {
         when(noteService.getById(1L)).thenReturn(note);
 
         mockMvc.perform(get("/note/edit")
-                .param("id", "1"))
+                        .param("id", "1")
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("note/edit"))
                 .andExpect(model().attributeExists("note"))
@@ -84,7 +88,9 @@ class NoteControllerTest {
         when(noteService.update(any(Note.class))).thenReturn(updatedNote);
 
         mockMvc.perform(post("/note/edit")
-                        .flashAttr("note", updatedNote))
+                        .flashAttr("note", updatedNote)
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/note/list"));
 
