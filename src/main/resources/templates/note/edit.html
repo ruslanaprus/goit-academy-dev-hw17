@@ -12,6 +12,7 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Notes Manager</a>
         <div class="d-flex">
+            <span class="navbar-text me-3 text-white" th:text="'Logged in as: ' + ${username}"></span>
             <form th:action="@{/logout}" method="post" class="d-inline">
                 <button type="submit" class="btn btn-outline-light">Log out</button>
             </form>

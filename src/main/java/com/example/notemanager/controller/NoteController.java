@@ -3,7 +3,9 @@ package com.example.notemanager.controller;
 import com.example.notemanager.exception.ExceptionMessages;
 import com.example.notemanager.exception.NoteServiceException;
 import com.example.notemanager.model.Note;
+import com.example.notemanager.model.User;
 import com.example.notemanager.service.NoteService;
+import com.example.notemanager.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,14 +26,18 @@ public class NoteController {
     private static final String REDIRECT_NOTE_LIST = "redirect:/note/list";
 
     private final NoteService noteService;
+    private final UserService userService;
 
     @GetMapping("/list")
     public ModelAndView listAll(@RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size) {
+        User currentUser = userService.getAuthenticatedUser();
+
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Note> notePage = noteService.listAll(pageRequest);
 
         ModelAndView modelAndView = new ModelAndView("note/list");
+        modelAndView.addObject("username", currentUser.getUserName());
         modelAndView.addObject("notes", notePage.getContent());
         modelAndView.addObject("currentPage", notePage.getNumber());
         modelAndView.addObject("totalPages", notePage.getTotalPages());
@@ -48,7 +54,10 @@ public class NoteController {
 
     @GetMapping("/edit")
     public ModelAndView edit(@RequestParam Long id) {
+        User currentUser = userService.getAuthenticatedUser();
+
         ModelAndView editNote = new ModelAndView("note/edit");
+        editNote.addObject("username", currentUser.getUserName());
         editNote.addObject("note", noteService.getById(id));
         return editNote;
     }
@@ -64,7 +73,11 @@ public class NoteController {
 
     @GetMapping("/create")
     public ModelAndView create() {
-        return new ModelAndView("note/create");
+        User currentUser = userService.getAuthenticatedUser();
+
+        ModelAndView createNote = new ModelAndView("note/create");
+        createNote.addObject("username", currentUser.getUserName());
+        return createNote;
     }
 
     @PostMapping("/create")
