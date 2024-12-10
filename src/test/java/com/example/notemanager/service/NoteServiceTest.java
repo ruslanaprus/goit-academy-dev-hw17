@@ -3,7 +3,7 @@ package com.example.notemanager.service;
 import com.example.notemanager.exception.ExceptionMessages;
 import com.example.notemanager.exception.NoteServiceException;
 import com.example.notemanager.model.Note;
-import com.example.notemanager.repository.INoteRepository;
+import com.example.notemanager.repository.NoteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -18,11 +18,11 @@ import static org.mockito.Mockito.*;
 
 class NoteServiceTest {
     private NoteService noteService;
-    private INoteRepository noteRepository;
+    private NoteRepository noteRepository;
 
     @BeforeEach
     void setUp() {
-        noteRepository = mock(INoteRepository.class);
+        noteRepository = mock(NoteRepository.class);
         noteService = new NoteService(noteRepository);
     }
 

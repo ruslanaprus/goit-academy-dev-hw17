@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public User getAuthenticatedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new EntityException(ExceptionMessages.ENTITY_NOT_FOUND.getMessage()));
+    }
 
     public String createUser(String username, String password) {
         if (userRepository.existsByUserName(username)) {
