@@ -13,17 +13,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(value = NoteServiceException.class)
+    @ExceptionHandler({NoteServiceException.class, EntityException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleNoteServiceException(NoteServiceException exception, Model model) {
-        log.error("A domain-specific issue was detected: {}", exception.getMessage(), exception);
-        model.addAttribute("message", exception.getMessage());
-        return "note/error";
-    }
-
-    @ExceptionHandler(value = EntityException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleEntityException(EntityException exception, Model model) {
+    public String handleDomainSpecificExceptions(Exception exception, Model model) {
         log.error("A domain-specific issue was detected: {}", exception.getMessage(), exception);
         model.addAttribute("message", exception.getMessage());
         return "note/error";
