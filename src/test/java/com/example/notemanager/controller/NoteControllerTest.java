@@ -2,7 +2,9 @@ package com.example.notemanager.controller;
 
 import com.example.notemanager.exception.ExceptionMessages;
 import com.example.notemanager.model.Note;
+import com.example.notemanager.model.User;
 import com.example.notemanager.service.NoteService;
+import com.example.notemanager.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,9 +34,20 @@ class NoteControllerTest {
     @MockBean
     private NoteService noteService;
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private User mockUser;
+
     @BeforeEach
     void setUp() {
         Mockito.reset(noteService);
+
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUserName("mockUser");
+        when(userService.getAuthenticatedUser()).thenReturn(mockUser);
     }
 
     @Test
@@ -57,8 +70,9 @@ class NoteControllerTest {
                         .with(user("mockUser").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("note/list"))
-                .andExpect(model().attributeExists("notes", "currentPage", "totalPages", "totalItems", "size"))
+                .andExpect(model().attributeExists("notes", "username", "currentPage", "totalPages", "totalItems", "size"))
                 .andExpect(model().attribute("notes", List.of(note1, note2)))
+                .andExpect(model().attribute("username", "mockUser"))
                 .andExpect(model().attribute("currentPage", page))
                 .andExpect(model().attribute("totalPages", 2))
                 .andExpect(model().attribute("totalItems", 3L))
@@ -102,7 +116,9 @@ class NoteControllerTest {
         Note invalidNote = Note.builder().id(1L).title("").content("").build();
 
         mockMvc.perform(post("/note/edit")
-                        .flashAttr("note", invalidNote))
+                        .flashAttr("note", invalidNote)
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("note/error"))
                 .andExpect(model().attributeExists("message"))
@@ -114,7 +130,9 @@ class NoteControllerTest {
         doNothing().when(noteService).delete(1L);
 
         mockMvc.perform(post("/note/delete")
-                        .param("id", "1"))
+                        .param("id", "1")
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/note/list"));
 
@@ -123,7 +141,9 @@ class NoteControllerTest {
 
     @Test
     void createFormReturnsCreateView() throws Exception {
-        mockMvc.perform(get("/note/create"))
+        mockMvc.perform(get("/note/create")
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("note/create"));
     }
@@ -135,7 +155,9 @@ class NoteControllerTest {
         when(noteService.create(any(Note.class))).thenReturn(newNote);
 
         mockMvc.perform(post("/note/create")
-                        .flashAttr("note", newNote))
+                        .flashAttr("note", newNote)
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/note/list"));
 
@@ -147,7 +169,9 @@ class NoteControllerTest {
         Note invalidNote = Note.builder().title("").content("").build();
 
         mockMvc.perform(post("/note/create")
-                        .flashAttr("note", invalidNote))
+                        .flashAttr("note", invalidNote)
+                        .with(csrf())
+                        .with(user("mockUser").roles("USER")))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("note/error"))
                 .andExpect(model().attributeExists("message"))
