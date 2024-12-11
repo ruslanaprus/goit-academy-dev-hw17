@@ -1,9 +1,9 @@
 # Note Manager
----
 
 A Java Spring MVC application designed to help with **notes management**. This project provides a secure and user-friendly functionalities for creating, reading, updating, and deleting notes.
 The purpose of this application is to provide a backend service for managing notes, which handles user authentication, session management, account lockout mechanisms, and input validation.
 This project is an enhanced version of the [Note Manager](https://github.com/ruslanaprus/goit-academy-dev-hw16), and it has an improved architecture for better maintainability and scalability.
+
 ---
 
 ## Technologies Used
