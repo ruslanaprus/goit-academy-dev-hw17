@@ -53,4 +53,9 @@ public class NoteService {
                 .orElseThrow(() -> new NoteServiceException(ExceptionMessages.NOTE_NOT_FOUND.getMessage()));
         noteRepository.delete(note);
     }
+
+    public Page<Note> search(String keyword, PageRequest pageRequest) {
+        User currentUser = userService.getAuthenticatedUser();
+        return noteRepository.findByUserAndKeyword(currentUser, keyword, pageRequest);
+    }
 }

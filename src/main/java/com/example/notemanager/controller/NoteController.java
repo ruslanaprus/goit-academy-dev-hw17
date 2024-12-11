@@ -76,4 +76,21 @@ public class NoteController {
         noteService.create(note);
         return new ModelAndView(REDIRECT_NOTE_LIST);
     }
+
+    @GetMapping("/search")
+    public ModelAndView searchNotes(@RequestParam String keyword,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Note> notePage = noteService.search(keyword, pageRequest);
+
+        ModelAndView modelAndView = new ModelAndView("note/list");
+        modelAndView.addObject("notes", notePage.getContent());
+        modelAndView.addObject("currentPage", notePage.getNumber());
+        modelAndView.addObject("totalPages", notePage.getTotalPages());
+        modelAndView.addObject("totalItems", notePage.getTotalElements());
+        modelAndView.addObject("size", size);
+        modelAndView.addObject("keyword", keyword);
+        return modelAndView;
+    }
 }

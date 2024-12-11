@@ -11,6 +11,10 @@
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Notes Manager</a>
+        <form th:action="@{/note/search}" method="get" class="d-flex">
+            <input class="form-control me-2" type="search" name="keyword" th:value="${keyword}" placeholder="Search notes" aria-label="Search">
+            <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
         <div class="d-flex">
             <span class="navbar-text me-3 text-white" th:text="'Logged in as: ' + ${username}"></span>
             <form th:action="@{/logout}" method="post" class="d-inline">
