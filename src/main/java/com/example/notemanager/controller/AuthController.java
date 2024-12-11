@@ -25,6 +25,8 @@ public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private static final int MAX_FAILED_LOGIN_ATTEMPTS = 2;
+    private static final int ACCOUNT_LOCK_DURATION_MINUTES = 15;
 
     @GetMapping("/login")
     public String loginPage() {
@@ -50,8 +52,8 @@ public class AuthController {
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 log.warn("Invalid credentials for user {}", username);
                 userService.incrementFailedAttempts(username);
-                if (user.getFailedAttempts() >= 2) {
-                    userService.lockAccount(username, LocalDateTime.now().plusMinutes(15));
+                if (user.getFailedAttempts() >= MAX_FAILED_LOGIN_ATTEMPTS) {
+                    userService.lockAccount(username, LocalDateTime.now().plusMinutes(ACCOUNT_LOCK_DURATION_MINUTES));
                     log.warn("User {} account locked due to too many failed attempts", username);
                     return "redirect:/login?error=LockedOut";
                 }

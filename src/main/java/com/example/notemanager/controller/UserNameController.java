@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @RequiredArgsConstructor
 public class UserNameController {
     private final UserService userService;
-    private final String DEFAULT_USER_NAME = "Guest";
+    private static final String DEFAULT_USER_NAME = "Guest";
 
     @ModelAttribute("username")
     public String getUsername() {
