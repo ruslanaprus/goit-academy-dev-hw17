@@ -45,6 +45,7 @@ This project is an enhanced version of the [Note Manager](https://github.com/rus
   - **Create Note**: Add a new note with an auto-generated ID.
   - **Update Note**: Modify an existing note.
   - **Delete Note**: Remove a note by ID.
+- **Search Notes**: Allows users to search for notes containing a specific keyword. This feature scans note titles and content for matches.
 - **User Input Validation**: Validates note data such as title and content using Jakarta Bean Validation.
 
 ### 4. Error Handling
@@ -116,6 +117,5 @@ gradle flywayMigrate
 ## Future Enhancements
 
 - **REST API**: Add controllers to expose note management functionalities via HTTP. Expand endpoints to support pagination, search, and filtering.
-- **Advanced Search and Filtering**: Add capabilities for searching and filtering notes by criteria such as keywords or creation date.
 - **Scalability Improvements**: Optimise the application for large-scale deployment.
 - **Implement Sharing Notes with other users**
