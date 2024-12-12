@@ -99,6 +99,7 @@ gradle flywayMigrate
 ```shell
 ./gradlew bootRun
 ```
+6. Visit the website at http://localhost:8080/signup or http://localhost:8080/login
 
 ---
 
